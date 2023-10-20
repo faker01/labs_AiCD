@@ -1,83 +1,101 @@
 from lab_1 import check
 
 
-s = input()
-nums = [""]
-signs = []
-if check(s):
-    j = 0
-    for i in range(len(s)):
-        if s[i] in '0123456789':
-            nums[j] += s[i]
-        elif nums[j] != "":
-            nums[j] = int(nums[j])
-            j += 1
-            nums.append("")
-    if nums[-1] == "":
-        nums.remove("")
+def func(str):
+    if '(' in str:
+        cur = str.index("(")
+        end = str.index(")")
+        while not check(str[cur+1:end]):
+            end += str[end + 1:].index(")") + 1
+        return func(str[:cur] + func(str[cur + 1:end]) + str[end + 1:])
+    elif "*" in str and "/" in str:
+        if str.index("*") < str.index("/"):
+            i = str.index("*")
+            cur = i - 1
+            end = i + 1
+            while cur > -1 and str[cur] in "0123456789":
+                cur -= 1
+            while end < len(str) and str[end] in "0123456789":
+                end += 1
+            res = "{}".format(int(int(str[cur + 1:i]) * int(str[i + 1:end])))
+            return func(str[:cur+1] + res + str[end:])
+        else:
+            i = str.index("/")
+            cur = i - 1
+            end = i + 1
+            while cur > -1 and str[cur] in "0123456789":
+                cur -= 1
+            while end < len(str) and str[end] in "0123456789":
+                end += 1
+            res = "{}".format(int(int(str[cur + 1:i]) / int(str[i + 1:end])))
+            return func(str[:cur+1] + res + str[end:])
+    elif "*" in str:
+        i = str.index("*")
+        cur = i - 1
+        end = i + 1
+        while cur > -1 and str[cur] in "0123456789":
+            cur -= 1
+        while end < len(str) and str[end] in "0123456789":
+            end += 1
+        res = "{}".format(int(int(str[cur + 1:i]) * int(str[i + 1:end])))
+        return func(str[:cur+1] + res + str[end:])
+    elif "/" in str:
+        i = str.index("/")
+        cur = i - 1
+        end = i + 1
+        while cur > -1 and str[cur] in "0123456789":
+            cur -= 1
+        while end < len(str) and str[end] in "0123456789":
+            end += 1
+        res = "{}".format(int(int(str[cur + 1:i]) / int(str[i + 1:end])))
+        return func(str[:cur+1] + res + str[end:])
+    elif "+" in str and "-" in str:
+        if str.index("+") < str.index("-"):
+            i = str.index("+")
+            cur = i - 1
+            end = i + 1
+            while cur > -1 and str[cur] in "0123456789":
+                cur -= 1
+            while end < len(str) and str[end] in "0123456789":
+                end += 1
+            res = "{}".format(int(str[cur + 1:i]) + int(str[i + 1:end]))
+            return func(str[:cur+1] + res + str[end:])
+        else:
+            i = str.index("-")
+            cur = i - 1
+            end = i + 1
+            while cur > -1 and str[cur] in "0123456789":
+                cur -= 1
+            while end < len(str) and str[end] in "0123456789":
+                end += 1
+            res = "{}".format(int(str[cur + 1:i]) - int(str[i + 1:end]))
+            return func(str[:cur+1] + res + str[end:])
+    elif "+" in str:
+        i = str.index("+")
+        cur = i - 1
+        end = i + 1
+        while cur > -1 and str[cur] in "0123456789":
+            cur -= 1
+        while end < len(str) and str[end] in "0123456789":
+            end += 1
+        res = "{}".format(int(str[cur + 1:i]) + int(str[i + 1:end]))
+        return func(str[:cur+1] + res + str[end:])
+    elif "-" in str:
+        i = str.index("-")
+        cur = i - 1
+        end = i + 1
+        while cur > -1 and str[cur] in "0123456789":
+            cur -= 1
+        while end < len(str) and str[end] in "0123456789":
+            end += 1
+        res = "{}".format(int(str[cur + 1:i]) - int(str[i + 1:end]))
+        return func(str[:cur+1] + res + str[end:])
+    str.replace("=", "")
+    return str.replace("=", "")
 
-    for i in range(len(s)):
-        if s[i] not in '0123456789=':
-            signs.append(s[i])
-    cur = 0
-    end = len(signs)
-    while len(signs) > 0:
-        if cur > len(signs) - 1:
-            cur = 0
-        elif cur == end:
-            end = len(signs) - 1
-            cur = 0
-        elif '(' in signs[cur:end]:
-            cur = signs.index("(")
-            end = signs.index(")") - 1
-            signs.pop(cur)
-            signs.pop(end)
-        elif "*" in signs[cur:end] and "/" in signs[cur:end]:
-            if signs.index("*", cur, end) < signs.index("/", cur, end):
-                res = nums[signs.index("*", cur, end)] * nums[signs.index("*", cur, end) + 1]
-                nums[signs.index("*", cur, end)] = res
-                nums.pop(signs.index("*", cur, end) + 1)
-                signs.pop(signs.index("*", cur, end))
-            else:
-                res = nums[signs.index("/", cur, end)] / nums[signs.index("/", cur, end) + 1]
-                nums[signs.index("/", cur, end)] = res
-                nums.pop(signs.index("/", cur, end) + 1)
-                signs.pop(signs.index("/", cur, end))
-            end -= 1
-        elif "*" in signs[cur:end]:
-            res = nums[signs.index("*", cur, end)] * nums[signs.index("*", cur, end) + 1]
-            nums[signs.index("*", cur, end)] = res
-            nums.pop(signs.index("*", cur, end) + 1)
-            signs.pop(signs.index("*", cur, end))
-            end -= 1
-        elif "/" in signs[cur:end]:
-            res = nums[signs.index("/", cur, end)] / nums[signs.index("/", cur, end) + 1]
-            nums[signs.index("/", cur, end)] = res
-            nums.pop(signs.index("/", cur, end) + 1)
-            signs.pop(signs.index("/", cur, end))
-            end -= 1
-        elif "+" in signs[cur:end] and "-" in signs[cur:end]:
-            if signs.index("+", cur, end) < signs.index("-", cur, end):
-                res = nums[signs.index("+", cur, end)] + nums[signs.index("+", cur, end) + 1]
-                nums[signs.index("+", cur, end)] = res
-                nums.pop(signs.index("+", cur, end) + 1)
-                signs.pop(signs.index("+", cur, end))
-            else:
-                res = nums[signs.index("-", cur, end)] - nums[signs.index("-", cur, end) + 1]
-                nums[signs.index("-", cur, end)] = res
-                nums.pop(signs.index("-", cur, end) + 1)
-                signs.pop(signs.index("-", cur, end))
-            end -= 1
-        elif "+" in signs[cur:end]:
-            res = nums[signs.index("+", cur, end)] + nums[signs.index("+", cur, end) + 1]
-            nums[signs.index("+", cur, end)] = res
-            nums.pop(signs.index("+", cur, end) + 1)
-            signs.pop(signs.index("+", cur, end))
-            end -= 1
-        elif "-" in signs[cur:end]:
-            res = nums[signs.index("-", cur, end)] - nums[signs.index("-", cur, end) + 1]
-            nums[signs.index("-", cur, end)] = res
-            nums.pop(signs.index("-", cur, end) + 1)
-            signs.pop(signs.index("-", cur, end))
-            end -= 1
-    print(nums[0])
+
+s = input()
+if check(s) and "/0" not in s:
+    print(func(s))
+else:
+    print("err")
