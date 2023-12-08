@@ -1,3 +1,6 @@
+from random import choice
+
+
 def bubble_sort(lst, flag):
     for i in range(len(lst)):
         for j in range(len(lst) - 1):
@@ -71,31 +74,45 @@ def heap_sort(lst):
 
 
 def merge_sort(lst):
-    if len(lst) > 1:
-        mid = len(lst) // 2
-        lefthalf = lst[:mid]
-        righthalf = lst[mid:]
-        merge_sort(lefthalf)
-        merge_sort(righthalf)
-        i = 0
-        j = 0
-        k = 0
-        while i < len(lefthalf) and j < len(righthalf):
-            if lefthalf[i] < righthalf[j]:
-                lst[k] = lefthalf[i]
-                i = i + 1
-            else:
-                lst[k] = righthalf[j]
-                j = j + 1
-            k = k + 1
-        while i < len(lefthalf):
-            lst[k] = lefthalf[i]
-            i = i + 1
-            k = k + 1
-        while j < len(righthalf):
-            lst[k] = righthalf[j]
-            j = j + 1
-            k = k + 1
+    if len(lst) < 2:
+        return lst[:]
+    else:
+        mid = int(len(lst) / 2)
+        left = merge_sort(lst[:mid])
+        right = merge_sort(lst[mid:])
+        return merge(left, right)
+
+
+def merge(left, right):
+    res = []
+    i, j = 0, 0
+    while i < len(left) and j < len(right):
+        if left[i] < right[j]:
+            res.append(left[i])
+            i += 1
+        else:
+            res.append(right[j])
+            j += 1
+    while i < len(left):
+        res.append(left[i])
+        i += 1
+    while j < len(right):
+        res.append(right[j])
+        j += 1
+    return res
+
+
+def quick_sort(lst):
+    if len(lst) <= 1:
+        return lst
+    else:
+        q = choice(lst)
+    l_nums = [n for n in lst if n < q]
+
+    e_nums = [q] * lst.count(q)
+    b_nums = [n for n in lst if n > q]
+    return quick_sort(l_nums) + e_nums + quick_sort(b_nums)
+
 
 
 list_ = [1, 0, 7, -5, 6, 4]
@@ -112,3 +129,5 @@ list_ = [1, 0, 7, -5, 6, 4]
 print(heap_sort(list_))
 list_ = [1, 0, 7, -5, 6, 4]
 print(merge_sort(list_))
+list_ = [1, 0, 7, -5, 6, 4]
+print(quick_sort(list_))
