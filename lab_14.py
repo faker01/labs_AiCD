@@ -1,11 +1,11 @@
 class Hash_func:
     def __init__(self, inp):
-        self.lst = {}
-        l = 0
+        self.lst = []
+        for i in range(10):
+            self.lst.append([])
         for i in range(len(inp)):
-            if inp[i] not in self.lst.values():
-                self.lst[l] = inp[i]
-                l += 1
+            ind = hash(inp[i])
+            self.lst[abs(ind) % 10].append("{}: {} ".format(ind, inp[i]))
 
     def hash_table(self):
         return self.lst
@@ -13,9 +13,11 @@ class Hash_func:
 
 
 with open("input.txt", "r") as f:
-    hash_ = Hash_func(f.read())
+    hash_ = Hash_func(f.read().split(" "))
 
 table = hash_.hash_table()
 with open("output.txt", "w") as f:
-    for i in table.keys():
-        f.write("{}: {}, ".format(i, table[i]))
+    for i in table:
+        for j in range(len(i)):
+            f.write(i[j])
+        f.write("\n")
