@@ -1,4 +1,7 @@
 from random import choice
+import os
+import heapq
+
 
 
 def bubble_sort(lst, flag):
@@ -45,7 +48,17 @@ def shell_sort(lst, flag):
 
 
 def tree_sort(lst):
-    return True
+    max_digits = max([len(str(x)) for x in lst])
+    base = 10
+    bins = [[] for _ in range(base)]
+    for i in range(max_digits):
+        for x in lst:
+            digit = (x // base ** i) % base
+            bins[digit].append(x)
+        lst = [x for queue in bins for x in queue]
+        bins = [[] for _ in range(base)]
+    return lst
+
 
 def heapify(lst, heap_size, root_index):
     largest = root_index
@@ -114,6 +127,39 @@ def quick_sort(lst):
     return quick_sort(l_nums) + e_nums + quick_sort(b_nums)
 
 
+def external_sort(lst, chunk_size):
+    chunk = []
+    chunk_count = 0
+
+    for i in range(len(lst)):
+        chunk.append(lst[i])
+        if len(chunk) == chunk_size:
+            chunk.sort()
+
+            with open(f'chunk_{chunk_count}.tmp', 'w') as chunk_file:
+                for num in chunk:
+                    chunk_file.write(f"{num}\n")
+
+            chunk_count += 1
+            chunk = []
+
+    # Merge the sorted chunks using heapq
+    files = [open(f'chunk_{i}.tmp', 'r') for i in range(chunk_count)]
+    merged = list(heapq.merge(*files, key=lambda x: int(x)))
+    for i in range(len(merged)):
+        merged[i] = merged[i][:len(merged[i])-1]
+    for i in files:
+        i.close()
+    # Clean up temporary files
+    for i in range(chunk_count):
+        os.remove(f'chunk_{i}.tmp')
+    return merged
+
+
+
+
+
+
 
 list_ = [1, 0, 7, -5, 6, 4]
 print(bubble_sort(list_, True))
@@ -131,3 +177,7 @@ list_ = [1, 0, 7, -5, 6, 4]
 print(merge_sort(list_))
 list_ = [1, 0, 7, -5, 6, 4]
 print(quick_sort(list_))
+list_ = [1, 0, 7, -5, 6, 4]
+print(external_sort(list_, 2))
+list_ = [1, 0, 7, 5, 6, 4]
+print(tree_sort(list_))
